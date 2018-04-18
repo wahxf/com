@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<div id="item-1">
+			
+		</div>
+		<div id="item-2">
+			
+		</div>
+		<div id="item-3">
+			
+		</div>
+	</body>
+	<script type="text/javascript">
+		const arr1 = [];
+		for(var i = 0; i < 3; i++) {
+			arr1.push(() => i);
+		}
+		const arr2 = arr1.map(x => x());
+		console.log(arr2);
+		var arr = [1, 2, 2, 3, 3, 5]
+		console.log(arr.slice());
+
+		var a = [1, 3, 6]
+		var s = a.reduce((prev, current) => {
+			console.log(prev, current);
+			return prev + current; // 1 + 2, 3+ 3
+		});
+		console.log(s);
+
+		var todos = [{
+			id: 1,
+			completed: true
+		}, {
+			id: 2,
+			completed: false
+		}, {
+			id: 3,
+			completed: true
+		}, {
+			id: 4,
+			completed: true
+		}, {
+			id: 5,
+			compelted: false
+		}];
+
+		const completedCount = todos.reduce((count, current) => {
+			console.log(count, current);
+			return current.completed ? count + 1 : count
+		}, 0);
+		console.log(completedCount); // 3
+
+		const unCompleted = todos.reduce((count, current) => {
+			return !current.completed ? count + 1 : count;
+		}, 0);
+		console.log(unCompleted); // 2
+
+		var count = 0;
+		todos.map((item) => {
+			if(item.completed) {
+				count++;
+			}
+		});
+		console.log(count); // 3
+
+		console.log('------------------------');
+		var pipe = (function() {
+			return function(value) {
+				var funcStack = [];
+				var oproxy = new Proxy({}, {
+					get: function(pipeObject, fnName) {
+						console.log(pipeObject);
+						console.log(fnName);
+						if(fnName === 'get') {
+							return funcStack.reduce(function(val, fn) {
+								return fn(val);
+							}, value);
+						}
+						funcStack.push(window[fnName]);
+						return oproxy;
+					}
+				});
+
+				return oproxy;
+			}
+		}());
+
+		var double = n => n * 2;
+		var pow = n => n * n;
+		var reverseInt = n => n.toString().split("").reverse().join("") | 0;
+		console.log(typeof double);
+		var aa = pipe(3).double.pow.reverseInt.get; // 63 .double.pow.reverseInt.get
+		console.log(aa);
+		console.log(typeof aa);
+
+		console.log('------------');
+		const dom = new Proxy({}, {
+			get(target, property) {
+				return function(attrs = {}, ...children) {
+					const el = document.createElement(property);
+					for(let prop of Object.keys(attrs)) {
+						el.setAttribute(prop, attrs[prop]);
+					}
+					for(let child of children) {
+						if(typeof child === 'string') {
+							child = document.createTextNode(child);
+						}
+						el.appendChild(child);
+					}
+					return el;
+				}
+			}
+		});
+
+		const el = dom.div({},
+			'Hello, my name is ',
+			dom.a({
+				href: '//example.com'
+			}, 'Mark'),
+			'. I like:',
+			dom.ul({},
+				dom.li({}, 'The web'),
+				dom.li({}, 'Food'),
+				dom.li({}, '…actually that\'s it')
+			)
+		);
+
+		document.body.appendChild(el);
+
+		console.log('-------------------------------------');
+		var sel = {selected: null}
+		let view = new Proxy(sel, {
+			set: function(obj, prop, newval) {
+				
+				let oldval = obj[prop];
+				console.log(sel);
+				console.log(obj);
+					console.log(prop);
+					console.log(oldval);
+					console.log(newval);
+				if(prop === 'selected') {
+					if(oldval) {
+						oldval.setAttribute('aria-selected', 'false');
+					}
+					if(newval) {
+						console.log("new");
+						newval.setAttribute('aria-selected', 'true');
+					}
+				}
+console.log("djfki");
+				// The default behavior to store the value
+				obj[prop] = newval;
+			}
+		});
+
+		let i1 = view.selected = document.getElementById('item-1');
+		console.log(i1.getAttribute('aria-selected')); // 'true'
+//
+		let i2 = view.selected = document.getElementById('item-2');
+//		console.log(i1.getAttribute('aria-selected')); // 'false'
+//		console.log(i2.getAttribute('aria-selected')); // 'true'
+
+
+
+var person = {
+  name: "张三"
+};
+
+var proxy = new Proxy(person, {
+  get: function(target, property) {
+//	console.log(person);
+//	console.log(target);
+    if (property in target) {
+      return target[property];
+    } else {
+      throw new ReferenceError("Property \"" + property + "\" does not exist.");
+    }
+  }
+});
+proxy.name = 'op'
+//console.log(proxy.name) // "张三"
+//console.log(proxy.age)
+	</script>
+
+</html>
