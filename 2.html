@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+	</body>
+	<script type="text/javascript">
+		function Foo(){
+			getName = function(){
+				console.log(1);
+			};
+			return this;
+		}
+		Foo.getName = function(){console.log(2)}
+		Foo.prototype.getName = function(){console.log(3)}
+		var getName = function(){console.log(4)}
+		function getName(){
+			console.log(5);
+		}
+		
+		
+		Foo.getName()//2
+		getName()//4 函数变量覆盖了函数声明
+		Foo().getName()//1
+		getName()//1
+		new Foo.getName();//2
+		new Foo().getName();//3
+		new new Foo().getName();//3
+		console.log(new new Foo().getName());
+		function f(){
+//			console.log(456);
+		}
+		f.prototype.fun = function(){console.log(123);}
+		var b = new f().fun()
+		console.log(typeof new f());
+		var a = new (new f().fun)()   //new (new f().fun)()
+//		a.fun()
+		
+	</script>
+</html>
